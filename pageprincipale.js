@@ -25,7 +25,9 @@ input.addEventListener("keydown", async (e) => {
                 return;
             }
 
-            ville.textContent = `${info.name}`;
+            nomVilleActuelle = info.name;
+            ville.textContent = nomVilleActuelle;
+
 
             ApiInitialisation(info.lat, info.lon);
         };
@@ -43,6 +45,7 @@ async function geoLocalisation(ville_recherchee) {
         if (!geolocalisation.results || geolocalisation.results.length === 0) return null;
 
         return {
+            name: geolocalisation.results[0].name,
             lat: geolocalisation.results[0].latitude,
             lon: geolocalisation.results[0].longitude
         };
@@ -63,8 +66,7 @@ async function ApiInitialisation(lat, long) {
         console.log("Données reçues !");
 
         // affichage des fonctions 
-        afficherTemperature()
-        afficherVille();
+        afficherTemperature();
         afficherLongitudeLatitude();
         afficherMaxMin();
         afficherDate();
@@ -90,16 +92,6 @@ function afficherTemperature() {
     }
 }
 
-
-function afficherVille() {
-    if (data !== null) {
-        ville.textContent = "e";
-    } else {
-        console.log(error);
-    }
-}
-
-
 function afficherLongitudeLatitude() {
     if (data !== null) {
         longitude_text.textContent = "Long : " + data.longitude;
@@ -112,12 +104,16 @@ function afficherLongitudeLatitude() {
 function afficherMaxMin() {
     if (data !== null) {
 
-        max.textContent = "Max : " + Math.max(...data.hourly.temperature_2m);
-        min.textContent = "Min : " + Math.min(...data.hourly.temperature_2m);
-    } else {
+        const todayTemps = data.hourly.temperature_2m.slice(0, 24).map(Number);
+
+        max.textContent = "Max : " + Math.max(...todayTemps);
+        min.textContent = "Min : " + Math.min(...todayTemps);
+    }
+    else{
         console.log(error);
     }
 }
+
 
 function afficherDate() {
     if (data !== null) {
@@ -138,13 +134,19 @@ function afficherRessenti() {
 }
 
 
-
+let graphique = null;
 function afficherGraphique() {
+
+
     if (data !== null) {
+        if (graphique !== null) {
+            graphique.destroy();
+        }
+
         let abscisses = data.hourly.time.slice(0, 24).map(t => t.slice(11, 16));;                  // heures
         let ordonnes = data.hourly.temperature_2m.slice(0, 24);
 
-        let graphique = new Chart("canvas", {
+        graphique = new Chart("canvas", {
             type: "line",
             data: {
                 labels: abscisses,
@@ -162,16 +164,6 @@ function afficherGraphique() {
 }
 
 
-function iconeMeteo() {
-    if (data.daily.weathercode[0] == 3) {
-        icone_meteo.textContent = "☁️";
-    } else if (data.daily.weathercode[0] == 51) {
-        icone_meteo.textContent = "⛅⛅";
-    } else if (data.daily.weathercode[0] == 63) {
-        icone_meteo.textContent = "☀️⛅";
-    }
-}
-
 
 function iconFromCode(code) {
     if (code === 0) return "☀️";
@@ -185,6 +177,12 @@ function iconFromCode(code) {
     if (code <= 99) return "⛈️";
     return "❓";
 }
+
+function iconeMeteo() {
+    icone_meteo.textContent = iconFromCode(data.daily.weathercode[0]);
+}
+
+
 
 
 function afficherPrevisions() {
@@ -214,11 +212,9 @@ function afficherPrevisions() {
 
 
 async function start() {
-    let info = await geoLocalisation("Blois"); 
+    let info = await geoLocalisation("Blois");
+    nomVilleActuelle = info.name;
     ApiInitialisation(info.lat, info.lon);
 }
 
 start();
-
-
-ApiInitialisation();
