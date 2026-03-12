@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherCast — Dashboard</title>
+    <link href="pagepincip.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <header class="navbar">
+        <div class="container nav-content">
+            
+            
+            <!-- logo -->
+            <div class="brand"><a href="pagepincip.html">Weather<br>Cast.</a></div>
+            <nav class="nav-links">
+            
+            <!-- barre de recherche -->
+            <div class="search-bar">
+            <img src="ressources/search.svg" alt="" class="search-icon">
+            <input type="text" placeholder="Rechercher une ville..." id="city-input">
+            </div>
+    
+            <!-- bouton favoris -->
+            <button class="btn-icon" aria-label="Favoris">
+            <img src="ressources/save.svg" alt="">
+            </button>
+    
+            <a href="boxbounding.html" class="link-item">Bounding Box</a>
+</nav>
+        </div>
+    </header>
+
+    <main class="container" id="milieu">
+        <div class="main-column">
+            <section class="card weather-now">
+                <div class="card-header">
+                    <div class="location-box">
+                        <img src="ressources/location.svg" alt="" class="icon-small">
+                        <h2>Blois, France</h2>
+                        <span class="date-tag">(Samedi, 02 Janvier)</span>
+                    </div>
+                    
+                    <button class="save-btn" aria-label="Enregistrer"><img src="ressources/save.svg" alt=""></button>
+                </div>
+
+                <div class="weather-grid">
+                    <div class="temp-hero">
+                        <div class="temp-val">
+                            <h1 id="temperature">--</h1>
+                            <span class="symbol">°C</span>
+                        </div>
+                        
+                        <p class="feels" id="feels-like">Ressenti : --</p>
+                    </div>
+
+                    <div class="weather-visual">
+                        <span class="big-emoji">☀️</span>
+                    </div>
+
+                    <div class="stats-side">
+                        <div class="toggle-unit">
+                            <button class="active">C</button>
+                            <span class="divider">|</span>
+                            <button>F</button>
+                        </div>
+                        
+                        <ul class="details-list">
+
+                       <li class="max" id="max-temp">MAX : --</li>
+                       <li class="min" id="min-temp">MIN : --</li>
+                       <li id="lat-display">Lat : --</li>
+                       <li id="lon-display">Long : --</li>
+
+                       </ul>
+                    </div>
+                </div>
+
+                <footer class="card-options">
+                    <label><input type="checkbox" checked> Statistiques</label>
+                    <label><input type="checkbox" checked> Prévisions</label>
+                </footer>
+            </section>
+
+            <!-- graphique 24h -->
+            <section class="card chart-box">
+            <h3>Évolution 24h</h3>
+            <canvas id="canvas"></canvas></section>
+
+           <!-- favoris -->
+           <section class="card">
+           <h3>Villes favorites</h3>
+           <ul id="favorites-list"></ul>
+           </section>
+           
+            <section class="card forecast-section">
+                <h3>Prévisions hebdomadaires</h3>
+                <div class="forecast-table">
+                    <div class="forecast-row">
+                        <span class="day">Jeu.</span>
+                        <span class="sky">☀️</span>
+                        <span class="range">15° / 3°</span>
+                    </div>
+                <button class="btn-flat">Détails complets &rsaquo;</button>
+            </section>
+        </div>
+
+
+    </main>
+</body>
+<script src="pageprincipale.js"></script>
+</html>

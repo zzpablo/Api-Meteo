@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherCast — Bounding Box</title>
+    <link href="pagepincip.css" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-content">
+            <div class="brand"><a href="pagepincip.html">Weather<br>Cast.</a></div>
+            <nav class="nav-links">
+                <div class="search-bar">
+                    <img src="ressources/search.svg" alt="" class="search-icon">
+                    <input type="text" placeholder="Rechercher une ville..." id="city-input">
+                </div>
+                <button class="btn-icon" aria-label="Favoris"><img src="ressources/save.svg" alt=""></button>
+                <a href="boxbounding.html" class="link-item active-link">Bounding Box</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" id="milieu">
+        <div class="main-column">
+            <section class="card">
+                <div class="card-header">
+                    <div class="location-box">
+                        <h2>Zone de recherche</h2>
+                        <p class="date-tag">Définissez les limites géographiques</p>
+                    </div>
+                </div>
+
+                <div class="bbox-form">
+                    <div class="bbox-grid">
+                        <div class="input-group">
+                            <label>Nord (Lat Max)</label>
+                            <input type="number" step="0.01" placeholder="48.85">
+                        </div>
+                        <div class="input-group">
+                            <label>Sud (Lat Min)</label>
+                            <input type="number" step="0.01" placeholder="47.12">
+                        </div>
+                        <div class="input-group">
+                            <label>Est (Lon Max)</label>
+                            <input type="number" step="0.01" placeholder="2.35">
+                        </div>
+                        <div class="input-group">
+                            <label>Ouest (Lon Min)</label>
+                            <input type="number" step="0.01" placeholder="1.20">
+                        </div>
+                    </div>
+                    <button class="btn-primary">Appliquer la zone</button>
+                </div>
+            </section>
+        </div>
+
+        <div class="side-column">
+            <section class="card info-box">
+                <h3>À quoi ça sert ?</h3>
+                <p>La <strong>Bounding Box</strong> permet de récupérer les données météo de toutes les stations présentes dans un rectangle géographique précis.</p>
+                <ul class="details-list" style="margin-top: 1rem;">
+                    <li>• Analyse régionale</li>
+                    <li>• Comparaison de micro-climats</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
