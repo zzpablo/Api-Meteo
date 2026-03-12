@@ -9,13 +9,55 @@ let latitude_text = document.querySelector("#lat-display");
 let ressenti = document.querySelector(".feels");
 
 let icone_meteo = document.querySelector(".big-emoji");
+let input = document.querySelector("#city-input");
 
 
 let data = null;
 
-async function ApiInitialisation() {
+
+input.addEventListener("keydown", async (e) => {
+    if (e.key === "Enter") {
+        let ville_recherchee = input.value.trim();
+        if (ville_recherchee !== "") {
+            let info = await geoLocalisation(ville_recherchee);
+            if (!info) {
+                alert("Ville introuvable");
+                return;
+            }
+
+            ville.textContent = `${info.name}`;
+
+            ApiInitialisation(info.lat, info.lon);
+        };
+    }
+})
+
+
+
+async function geoLocalisation(ville_recherchee) {
     try {
-        const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=47.5943&longitude=1.3291&hourly=temperature_2m&models=meteofrance_seamless&daily=weathercode,temperature_2m_max,temperature_2m_min');
+        let reponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${ville_recherchee}`);
+        geolocalisation = await reponse.json();
+
+        console.log("Données reçues !");
+        if (!geolocalisation.results || geolocalisation.results.length === 0) return null;
+
+        return {
+            lat: geolocalisation.results[0].latitude,
+            lon: geolocalisation.results[0].longitude
+        };
+
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
+
+async function ApiInitialisation(lat, long) {
+    try {
+        let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&hourly=temperature_2m&models=meteofrance_seamless&daily=weathercode,temperature_2m_max,temperature_2m_min`);
         data = await response.json();
 
         console.log("Données reçues !");
@@ -120,12 +162,12 @@ function afficherGraphique() {
 }
 
 
-function iconeMeteo(){
-    if(data.daily.weathercode[0] == 3){
+function iconeMeteo() {
+    if (data.daily.weathercode[0] == 3) {
         icone_meteo.textContent = "☁️";
-    }else if(data.daily.weathercode[0] == 51){
+    } else if (data.daily.weathercode[0] == 51) {
         icone_meteo.textContent = "⛅⛅";
-    }else if(data.daily.weathercode[0] == 63){
+    } else if (data.daily.weathercode[0] == 63) {
         icone_meteo.textContent = "☀️⛅";
     }
 }
@@ -171,5 +213,12 @@ function afficherPrevisions() {
 }
 
 
+async function start() {
+    let info = await geoLocalisation("Blois"); 
+    ApiInitialisation(info.lat, info.lon);
+}
 
-ApiInitialisation()
+start();
+
+
+ApiInitialisation();
