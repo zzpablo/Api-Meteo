@@ -73,6 +73,38 @@ body {
     background: #eee;
 }
 
+.forecast-row {
+    cursor: pointer;
+    transition: background 0.25s ease, transform 0.15s ease;
+}
+
+.forecast-row:hover {
+    background: rgba(0, 0, 0, 0.04);
+    transform: translateX(4px);
+}
+
+/* --- FAVORIS --- */
+.fav-item {
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background 0.25s ease, transform 0.15s ease;
+    font-weight: 500;
+}
+
+/* Survol */
+.fav-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+    transform: translateX(4px);
+}
+
+/* Clic actif */
+.fav-item.active {
+    background: rgba(0, 0, 0, 0.08);
+    transform: translateX(6px);
+}
+
+
 .btn-icon img {
     width: 16px;
 }

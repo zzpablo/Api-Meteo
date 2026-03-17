@@ -44,13 +44,18 @@ async function geoLocalisation(ville_recherchee) {
         geolocalisation = await reponse.json();
 
         console.log("Données reçues !");
-        if (!geolocalisation.results || geolocalisation.results.length === 0) return null;
+        if (!geolocalisation.results || geolocalisation.results.length === 0) {
+            return null;
+        } else {
+            return {
+                name: geolocalisation.results[0].name,
+                lat: geolocalisation.results[0].latitude,
+                lon: geolocalisation.results[0].longitude
+            };
 
-        return {
-            name: geolocalisation.results[0].name,
-            lat: geolocalisation.results[0].latitude,
-            lon: geolocalisation.results[0].longitude
-        };
+        }
+
+
 
 
     } catch (error) {
@@ -72,6 +77,7 @@ celciusBtn.addEventListener("click", () => {
 
     ApiInitialisation(data.latitude, data.longitude, unite);
 });
+
 
 farenBtn.addEventListener("click", () => {
     unite = "fahrenheit";
@@ -175,7 +181,7 @@ function afficherGraphique() {
             data: {
                 labels: abscisses,
                 datasets: [{
-                    label: ["Températures d'aujourd'hui", "demain", "après-demain"],
+                    label: "Températures : Aujourd’hui",
                     data: ordonnes,
                 }]
             },
@@ -187,6 +193,41 @@ function afficherGraphique() {
         console.log(error);
     }
 }
+
+
+function afficherGraphiquePourJour(jourIndex) {
+    if (!data) return;
+
+    let start = jourIndex * 24;
+    let end = start + 24;
+
+    let abscisses = data.hourly.time.slice(start, end).map(t => t.slice(11, 16));
+    let ordonnes = data.hourly.temperature_2m.slice(start, end);
+
+    graphique.data.labels = abscisses;
+    graphique.data.datasets[0].data = ordonnes;
+
+    let noms = ["Aujourd’hui", "Demain", "Après‑demain", "Après Après-demain"];
+    graphique.data.datasets[0].label = `Températures : ${noms[jourIndex]}`;
+
+    graphique.update();
+}
+
+
+
+let statsCheck = document.querySelector(".card-options label:nth-child(1) input");
+let prevCheck = document.querySelector(".card-options label:nth-child(2) input");
+
+let statsSection = document.querySelector(".chart-box");
+let prevSection = document.querySelector(".forecast-section");
+
+statsCheck.addEventListener("change", () => {
+    statsSection.style.display = statsCheck.checked ? "block" : "none";
+});
+
+prevCheck.addEventListener("change", () => {
+    prevSection.style.display = prevCheck.checked ? "block" : "none";
+});
 
 
 
@@ -203,37 +244,46 @@ function iconFromCode(code) {
     return "❓";
 }
 
+
 function iconeMeteo() {
     icone_meteo.textContent = iconFromCode(data.daily.weathercode[0]);
 }
 
-
-
-
 function afficherPrevisions() {
-    const table = document.querySelector(".forecast-table");
+    let table = document.querySelector(".forecast-table");
     table.innerHTML = "";
 
-    const jours = ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."];
+    let jours = ["Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam."];
 
     for (let i = 0; i < 4; i++) {
 
-        const d = new Date(data.daily.time[i]);
-        const day = jours[d.getDay()];
+        let d = new Date(data.daily.time[i]);
+        let day = jours[d.getDay()];
 
-        const icon = iconFromCode(data.daily.weathercode[i]);
-        const max = Math.round(data.daily.temperature_2m_max[i]);
-        const min = Math.round(data.daily.temperature_2m_min[i]);
+        let icon = iconFromCode(data.daily.weathercode[i]);
+        let max = Math.round(data.daily.temperature_2m_max[i]);
+        let min = Math.round(data.daily.temperature_2m_min[i]);
 
         table.innerHTML += `
-            <div class="forecast-row">
+            <div class="forecast-row" data-day="${i}">
                 <span class="day">${day}</span>
                 <span class="sky">${icon}</span>
                 <span class="range">${max}° / ${min}°</span>
             </div>
         `;
     }
+
+
+
+    
+    document.querySelectorAll(".forecast-row").forEach(row => {
+        row.addEventListener("click", () => {
+            let jour = Number(row.dataset.day);
+            afficherGraphiquePourJour(jour);
+        });
+    });
 }
+
 
 
 async function start() {
@@ -247,15 +297,30 @@ start();
 
 let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
 
-const save = document.querySelector(".save-btn");
-const list = document.getElementById("favorites-list");
+let save = document.querySelector(".save-btn");
+let list = document.getElementById("favorites-list");
 
 function afficherFavoris() {
-    list.innerHTML = favoris.map(ville => `<li>${ville}</li>`).join("");
+    list.innerHTML = favoris.map(ville => `<li class="fav-item">${ville}</li>`).join("");
+
+    document.querySelectorAll(".fav-item").forEach(li => {
+        li.addEventListener("click", async () => {
+            let ville_recherchee = li.textContent;
+
+            let info = await geoLocalisation(ville_recherchee);
+            if (!info) return;
+
+            nomVilleActuelle = info.name;
+            ville.textContent = nomVilleActuelle;
+
+            ApiInitialisation(info.lat, info.lon);
+
+        });
+    });
 }
 
 save.addEventListener("click", () => {
-    console.log("CLICK sur #save, ville actuelle :", nomVilleActuelle);
+    console.log(nomVilleActuelle);
 
     if (!nomVilleActuelle) return;
     if (!favoris.includes(nomVilleActuelle)) {
